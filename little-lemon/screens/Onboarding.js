@@ -1,4 +1,4 @@
-import { View, Image, TextInput, Text, StyleSheet, KeyboardAvoidingView } from "react-native";
+import { View, Image, StatusBar, Text, StyleSheet, KeyboardAvoidingView } from "react-native";
 import { useFonts } from 'expo-font';
 import { useState } from 'react'
 import Button from "../src/components/Button";
@@ -37,7 +37,10 @@ const Onboarding = () => {
 
 
     return (
+        
         <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.container}>
+            <StatusBar barStyle='light-content' backgroundColor='#EE9972'/>
+
             <View style={styles.header}>
                 <Image source={require('../src/images/Logo.png')} style={styles.logo}/>
             </View>
@@ -97,8 +100,8 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
     },
     logo: {
-        width: 270,
-        height: 60,
+        width: 260,
+        height: 55,
     },
     headerText: {
         flex: 0.15,

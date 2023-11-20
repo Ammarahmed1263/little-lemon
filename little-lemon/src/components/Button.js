@@ -14,8 +14,7 @@ const Button = ({text, disabled, ...props}) => {
 
     const buttonStyles = [
         styles.container,
-        disabled && styles.containerDisabled,
-        {backgroundColor: pressed ? '#F4CE14' : '#495E57'},
+        disabled ? styles.containerDisabled : {backgroundColor: pressed ? '#F4CE14' : '#495E57'},
         props.style
     ];
 
@@ -42,8 +41,8 @@ const styles = StyleSheet.create({
         borderColor: '#F4CE14'
     },
     containerDisabled: {
-        borderColor: '#F8E068',
-        backgroundColor: '#67847B'
+        borderColor: '#FAE994',
+        backgroundColor: '#92AAA3'
     },
     buttonText: {
         fontSize: 25,
