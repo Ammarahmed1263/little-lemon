@@ -5,19 +5,17 @@ const Button = ({text, disabled, ...props}) => {
     const [pressed, setPressed] = useState(false);
 
     const handlePressIn = () => {
-        console.log(pressed);
         setPressed(true);
     };
 
     const handlePressOut = () => {
-        console.log(pressed);
         setPressed(false);
     };
 
     const buttonStyles = [
         styles.container,
         disabled && styles.containerDisabled,
-        pressed ? '#F4CE14' : '#495E57',
+        {backgroundColor: pressed ? '#F4CE14' : '#495E57'},
         props.style
     ];
 
@@ -38,8 +36,8 @@ const styles = StyleSheet.create({
     container: {
         borderRadius: 8,
         alignItems: 'center',
-        paddingHorizontal: 20,
-        paddingVertical: 6,
+        paddingHorizontal: 40,
+        paddingVertical: 8,
         borderWidth: 2,
         borderColor: '#F4CE14'
     },
@@ -48,8 +46,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#67847B'
     },
     buttonText: {
-        fontSize: 20,
-        color: 'white',
+        fontSize: 25,
+        color: '#EDEFEE',
         fontWeight: '600',
     },
     textDisabled: {

@@ -5,7 +5,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       <Onboarding />
-      <StatusBar barStyle='dark-content'backgroundColor='white'/>
+      <StatusBar barStyle='light-content' backgroundColor='#EE9972'/>
     </View>
   );
 }
