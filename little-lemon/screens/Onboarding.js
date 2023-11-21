@@ -3,10 +3,12 @@ import { useFonts } from 'expo-font';
 import { useState } from 'react'
 import Button from "../src/components/Button";
 import InputLabeled from "../src/components/InputLabeled";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Onboarding = () => {
     const [name, setName] = useState('');
     const [mail, setMail] = useState('');
+    const [isCompleted, setIsCompleted] = useState(false);
     const [fontsLoaded] = useFonts({
         'Markazi Text': require('../src/fonts/MarkaziText.ttf'),
     });
@@ -35,6 +37,21 @@ const Onboarding = () => {
         }
     }
 
+    const storeData = async (value) => {
+        try {
+            await AsyncStorage.setItem('completed', JSON.stringify(value));
+            setIsCompleted(value);
+        } catch (e) {
+            console.log('failed to presist', e);
+        }
+    }
+
+    const handlePress = () => {
+        if (name && mail) {
+            console.log('clicked');
+            storeData(isCompleted);
+        }
+    }
 
     return (
         
@@ -81,6 +98,7 @@ const Onboarding = () => {
                     <Button 
                         text="Next" 
                         disabled={!(name && mail)}
+                        onPress={handlePress}
                     />
                 </View>
             </View>
