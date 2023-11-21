@@ -1,14 +1,16 @@
 import { View, Image, StatusBar, Text, StyleSheet, KeyboardAvoidingView } from "react-native";
 import { useFonts } from 'expo-font';
-import { useState } from 'react'
+import { useState, useContext } from 'react'
+
 import Button from "../src/components/Button";
 import InputLabeled from "../src/components/InputLabeled";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { OnboardingContext } from "../App";
 
 const Onboarding = () => {
+    const { setisOnboardingCompleted } = useContext(OnboardingContext);
     const [name, setName] = useState('');
     const [mail, setMail] = useState('');
-    const [isCompleted, setIsCompleted] = useState(false);
     const [fontsLoaded] = useFonts({
         'Markazi Text': require('../src/fonts/MarkaziText.ttf'),
     });
@@ -22,8 +24,10 @@ const Onboarding = () => {
 
         if(validName.test(name)) {
             setName(name);
+            return true;
         } else {
             alert("Please enter a name with letters only");
+            return false;
         }
     }
 
@@ -32,26 +36,28 @@ const Onboarding = () => {
         
         if(validMail.test(mail)) {
             setMail(mail);
+            return true;
         } else {
             alert("Please enter a valid email address");
+            return false;
         }
     }
 
     const storeData = async (value) => {
         try {
             await AsyncStorage.setItem('completed', JSON.stringify(value));
-            setIsCompleted(value);
+            setisOnboardingCompleted(value);
         } catch (e) {
             console.log('failed to presist', e);
         }
     }
 
     const handlePress = () => {
-        if (name && mail) {
-            console.log('clicked');
-            storeData(isCompleted);
+        if (validateMail() && validateName()) {
+            storeData(true);
         }
     }
+    
 
     return (
         
