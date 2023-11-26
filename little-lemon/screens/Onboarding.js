@@ -1,16 +1,15 @@
 import { View, Image, StatusBar, Text, StyleSheet, KeyboardAvoidingView } from "react-native";
 import { useFonts } from 'expo-font';
-import { useState, useContext } from 'react'
+import { useContext } from 'react'
+import { OnboardingContext } from "../src/components/CreateContext";
 
 import Button from "../src/components/Button";
 import InputLabeled from "../src/components/InputLabeled";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { OnboardingContext } from "../App";
 
 const Onboarding = () => {
-    const { setisOnboardingCompleted } = useContext(OnboardingContext);
-    const [name, setName] = useState('');
-    const [mail, setMail] = useState('');
+    const { setisOnboardingCompleted, userData, setUserData } = useContext(OnboardingContext);
+
     const [fontsLoaded] = useFonts({
         'Markazi Text': require('../src/fonts/MarkaziText.ttf'),
     });
@@ -22,8 +21,8 @@ const Onboarding = () => {
     const validateName = () => {
         const validName = /^[a-zA-Z]+$/
 
-        if(validName.test(name)) {
-            setName(name);
+        if(validName.test(userData.firstName)) {
+            setUserData({...userData, firstName: userData.firstName})
             return true;
         } else {
             alert("Please enter a name with letters only");
@@ -34,8 +33,8 @@ const Onboarding = () => {
     const validateMail = () => {
         const validMail = /^[a-zA-Z]+@[a-zA-Z]+\.[a-zA-Z]{2,}$/;
         
-        if(validMail.test(mail)) {
-            setMail(mail);
+        if(validMail.test(userData.email)) {
+            setUserData({...userData, email: userData.email});         
             return true;
         } else {
             alert("Please enter a valid email address");
@@ -46,6 +45,7 @@ const Onboarding = () => {
     const storeData = async (value) => {
         try {
             await AsyncStorage.setItem('completed', JSON.stringify(value));
+            console.log(userData);
             setisOnboardingCompleted(value);
         } catch (e) {
             console.log('failed to presist', e);
@@ -55,9 +55,11 @@ const Onboarding = () => {
     const handlePress = () => {
         if (validateMail() && validateName()) {
             storeData(true);
+            return true;
         }
+        return false;
     }
-    
+
 
     return (
         
@@ -80,11 +82,10 @@ const Onboarding = () => {
                         inputStyle={styles.textInput}
                         placeholder="Lionel"
                         placeholderTextColor="#B1B1B1"
-                        value={name}
-                        onChangeText={setName}
+                        value={userData.name}
+                        onChangeText={(firstName) => setUserData({...userData, firstName: firstName})}
                         onBlur={validateName}
                     />
-
                     
                     <InputLabeled
                         label='Email'
@@ -93,8 +94,8 @@ const Onboarding = () => {
                         inputStyle={styles.textInput}
                         placeholder="example@example.com"
                         placeholderTextColor="#B1B1B1"
-                        value={mail}
-                        onChangeText={setMail}
+                        value={userData.email}
+                        onChangeText={(email) => setUserData({...userData, email: email})}
                         onBlur={validateMail}
                     />
 
@@ -102,9 +103,12 @@ const Onboarding = () => {
                 
                 <View style={styles.bodyNext}>
                     <Button 
-                        text="Next" 
-                        disabled={!(name && mail)}
+                        title="Next" 
+                        disabled={!(userData.firstName && userData.email)}
+                        highlightcolor='#F4CE14'
                         onPress={handlePress}
+                        style={styles.button}
+                        disabledStyle={styles.buttonDisabled}
                     />
                 </View>
             </View>
@@ -170,6 +174,18 @@ const styles = StyleSheet.create({
         paddingBottom: 6,
         fontWeight: '300',
         color: '#EDEFEE',
+    },
+    button: {
+        borderRadius: 8,
+        alignItems: 'center',
+        paddingHorizontal: 40,
+        paddingVertical: 8,
+        borderWidth: 2,
+        borderColor: '#F4CE14'
+    },
+    buttonDisabled: {
+        borderColor: '#FAE994',
+        backgroundColor: '#92AAA3'
     }
 })
 export default Onboarding;
