@@ -1,4 +1,5 @@
 import { View, Text, StyleSheet, Image, StatusBar } from "react-native"
+import Icon from 'react-native-vector-icons/Ionicons';
 import CheckBox from 'expo-checkbox';
 import { useContext } from "react";
 
@@ -12,39 +13,49 @@ const Profile = () => {
 
     return (
         <View style={styles.container}>
-            <StatusBar barStyle='light-content' backgroundColor='#EE9972'/>
+            <StatusBar barStyle='dark-content' backgroundColor='#EDEFEE'/>
 
             
             <View style={styles.header}>
-                <Button title="←" style={styles.backButton}/>
+            <Button style={styles.backButton}>
+                <View style={styles.iconContainer}>
+                    <Icon
+                    name="ios-arrow-back"
+                    size={28}
+                    color='#EDEFEE'
+                    />
+                </View>
+            </Button>
                 <Image source={require('../src/images/Logo.png')} style={styles.logo}/>
-                <Image source={require('../src/images/Lemon.png')} style={styles.logo2}/>
+                <Image source={require('../src/images/Lemon.png')} style={styles.headerPic}/>
             </View>
             
             <View style={styles.page}>
 
-                <View style={styles.infoSection} >
+                <View>
                     <Text style={styles.heading}>Personal information</Text>
                     
                     <View style={styles.innerImage}>
                         <Image source={require('../src/images/Lemon.png')} style={styles.profilePicture}/>
                         <Button 
-                            title="change"
+                            title="Change"
                             style={styles.changeButton}
+                            titleStyle={styles.changeTitle}
                             highlightColor="blue"
-                            disabledStyle={{backgroundColor: "black"}}
                         />
                         <Button 
-                            title="remove" />
+                            title="Remove"
+                            titleStyle={styles.removeTitle}
+                            style={styles.removeButton} />
                     </View>
                 
-                    <View  style={styles.innerInput}> 
+                    <View> 
                         <InputLabeled 
                             label='First Name'
                             containerStyle={styles.inputContainer}
                             labelStyle={styles.label}
                             inputStyle={styles.textInput}
-                            placeholder="Lionel"
+                            placeholder="Leo"
                             placeholderTextColor="#B1B1B1"
                             value={userData.firstName}
                             onChangeText={(firstName) => setUserData({...userData, firstName: firstName})}
@@ -88,25 +99,46 @@ const Profile = () => {
 
                 <View style={styles.notificationSection} >
                     <Text style={styles.heading}>Email notification</Text>
-                    <View style={styles.checkBoxContainer}>
-                        <CheckBox />
-                        <CheckBox />
-                        <CheckBox />
-                        <CheckBox />
+                    <View>
+                        <View style={styles.checkboxContainer}>
+                            <CheckBox />
+                            <Text style={styles.checkboxText}>Order statuses</Text>
+                        </View>
+                        <View style={styles.checkboxContainer}>
+                            <CheckBox />
+                            <Text style={styles.checkboxText}>Password changes</Text>
+                        </View>
+                        <View style={styles.checkboxContainer}>
+                            <CheckBox />
+                            <Text style={styles.checkboxText}>Special offers</Text>
+                        </View>
+                        <View style={styles.checkboxContainer}>
+                            <CheckBox />
+                            <Text style={styles.checkboxText}>Newsletter</Text>
+                        </View>
                     </View>
                 </View>
 
-                {/* <View style={styles.buttonSection}>
-                    <Button title="Log out"
-                    style={styles.button}
-                    disabledStyle={styles.buttonDisabled}/>
-                    <Button title="Discard changes"
-                    style={styles.button}
-                    disabledStyle={styles.buttonDisabled}/>
-                    <Button title="Save changes"
-                    style={styles.button}
-                    disabledStyle={styles.buttonDisabled}/>
-                </View> */}
+                <View style={styles.buttonSection}>
+                    <Button
+                        title="Log out"
+                        style={styles.logoutButton}
+                        titleStyle={styles.logoutText}
+                    />
+                    
+                    <View style={styles.changesArea}>
+                        <Button 
+                            title="Discard changes"
+                            style={[styles.removeButton, {marginLeft: 15}]}
+                            titleStyle={{fontSize: 17, color: '#495E57'}}
+                        />
+                        <Button 
+                            title="Save changes"
+                            style={[styles.changeButton, {marginRight: 15}]}
+                            titleStyle={{fontSize: 17, fontWeight: '500'}}
+                        />
+                    </View>
+                </View>
                 
             </View>
         </View>
@@ -117,25 +149,38 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     header: {
-        flex: 0.1,
+        flex: 0.08,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        backgroundColor: '#EE9972'
+        marginHorizontal: 8,
     },
     backButton: {
         backgroundColor: '#495E57',
-        width: 55,
-        height: 55,
-        borderRadius: 27,
+        color: '#EDEFEE',
+        width: 40,
+        height: 40,
+        borderRadius: 20
+    },
+    iconContainer: {
+        flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
     },
+    headerPic: {
+        resizeMode: 'cover',
+        width: 55,
+        height: 55,
+        borderRadius: 27,
+        backgroundColor: '#BBB'
+    },
     page: {
-        flex: 0.9,
+        flex: 0.92,
         borderRadius: 25,
-        borderWidth: 10,
-        borderColor: '#CCC'
+        borderWidth: 2,
+        borderColor: '#CCC',
+        padding: 10,
+        margin: 7,
     },
     heading: {
         fontSize: 25,
@@ -145,31 +190,53 @@ const styles = StyleSheet.create({
     },
     innerImage: {
         flexDirection: 'row',
-        justifyContent: 'space-around',
         alignItems: 'center',
-        paddingVertical: 30
+        paddingHorizontal: 10,
+        paddingVertical: 4,
     },
     changeButton: {
         borderRadius: 8,
         alignItems: 'center',
+        justifyContent: 'center',
         paddingHorizontal: 12,
-        paddingVertical: 6,
-        backgroundColor: '#495E57'
+        paddingVertical: 10,
+        backgroundColor: '#495E57',
+        marginLeft: 25,
+    },
+    changeTitle: {
+        fontSize: 21,
+        fontWeight: '400'
+    },
+    removeButton: {
+        backgroundColor: '#EDEFEE',
+        borderColor: '#495E57',
+        borderWidth: 2,
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingHorizontal: 12,
+        paddingVertical: 10,
+        borderRadius: 4,
+        marginLeft: 15,
+    },
+    removeTitle: {
+        color: '#495E57',
+        fontSize: 18,
     },
     profilePicture: {
-        width: 55,
-        height: 55,
-        borderRadius: 27,
-        backgroundColor: 'red',
+        width: 90,
+        height: 90,
+        borderRadius: 45,
+        backgroundColor: '#BBB',
     },
     inputContainer: {
-        marginHorizontal: 10,
+        marginHorizontal: 5,
+        paddingVertical : 4
     },
     textInput: {
         color: '#EDEFEE',
-        fontSize: 15,
+        fontSize: 14,
         fontWeight: '500',
-        paddingVertical: 6,
+        paddingVertical: 4,
         paddingHorizontal: 10,
         borderRadius: 10,
         borderWidth: 2,
@@ -181,20 +248,37 @@ const styles = StyleSheet.create({
         fontWeight: '500',
         color: '#333',
     },
-    buttonSection: {
-        padding:30,
+    checkboxContainer: {
+        flexDirection: 'row' ,
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        paddingVertical: 3,
+        paddingHorizontal: 8
     },
-    button: {
+    checkboxText: {
+        fontSize: 18,
+        paddingLeft: 10,
+        fontWeight: '500',
+        color: '#333'
+    },
+    logoutButton: {
         borderRadius: 8,
         alignItems: 'center',
         paddingHorizontal: 40,
-        paddingVertical: 8,
+        paddingVertical: 5,
+        backgroundColor: '#F4CE14',
         borderWidth: 2,
-        borderColor: '#F4CE14'
+        borderColor: '#FBDABB',
+        marginTop: 10
     },
-    buttonDisabled: {
-        borderColor: '#FAE994',
-        backgroundColor: '#92AAA3'
+    logoutText: {
+        color: '#333',
+        fontSize: 22,
+    },
+    changesArea: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        marginTop: 15,
     }
 })
 

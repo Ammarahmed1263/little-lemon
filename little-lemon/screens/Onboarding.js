@@ -80,7 +80,7 @@ const Onboarding = () => {
                         containerStyle={styles.inputContainer}
                         labelStyle={styles.label}
                         inputStyle={styles.textInput}
-                        placeholder="Lionel"
+                        placeholder="Leo"
                         placeholderTextColor="#B1B1B1"
                         value={userData.name}
                         onChangeText={(firstName) => setUserData({...userData, firstName: firstName})}

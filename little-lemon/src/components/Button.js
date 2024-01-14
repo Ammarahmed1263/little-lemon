@@ -1,7 +1,7 @@
 import { Pressable,StyleSheet,Text } from "react-native";
 import { useState } from 'react'
 
-const Button = ({title, disabled, style, disabledStyle, highlightColor, ...props}) => {
+const Button = ({title, disabled, style, disabledStyle, titleStyle, disabledTitle, children, highlightColor, ...props}) => {
     const [pressed, setPressed] = useState(false);
 
     const handlePressIn = () => {
@@ -14,9 +14,13 @@ const Button = ({title, disabled, style, disabledStyle, highlightColor, ...props
 
     const buttonStyles = [
         disabled ? disabledStyle : 
-        {...style, backgroundColor: pressed ? highlightColor : 
-            (style?.backgroundColor ? style.backgroundColor : "#495E57")}
+        Array.isArray(style) 
+          ? { ...Object.assign({}, ...style), backgroundColor: pressed ? highlightColor : 
+              (style[0]?.backgroundColor ? style[0].backgroundColor : "#495E57")}
+          : {...style, backgroundColor: pressed ? highlightColor : 
+              (style?.backgroundColor ? style.backgroundColor : "#495E57")}
     ];
+      
        
 
     return (
@@ -26,7 +30,8 @@ const Button = ({title, disabled, style, disabledStyle, highlightColor, ...props
             onPressOut={handlePressOut}
             {...props}
         >
-            <Text style={[styles.buttonText, disabled && styles.textDisabled]}>{title}</Text>
+            {children}
+            {!children && <Text style={[styles.buttonText, titleStyle, disabled && [styles.textDisabled, disabledTitle]]}>{title}</Text>}
         </Pressable>
     )
 }
