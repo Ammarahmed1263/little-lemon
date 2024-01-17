@@ -2,6 +2,7 @@ import { View, Image, StatusBar, Text, StyleSheet, KeyboardAvoidingView } from "
 import { useFonts } from "expo-font";
 import { useContext } from "react";
 
+import { validateMail, validateName } from "../utils/validations";
 import { OnboardingContext } from "../src/components/CreateContext";
 import Button from "../src/components/Button";
 import InputLabeled from "../src/components/InputLabeled";
@@ -18,34 +19,9 @@ const Onboarding = () => {
     return <Text>Loading...</Text>;
   }
 
-  const validateName = () => {
-    const validName = /^[a-zA-Z]+$/;
-
-    if (validName.test(userData.firstName)) {
-      setUserData({ ...userData, firstName: userData.firstName });
-      return true;
-    } else {
-      alert("Please enter a name with letters only");
-      return false;
-    }
-  };
-
-  const validateMail = () => {
-    const validMail = /^[a-zA-Z]+@[a-zA-Z]+\.[a-zA-Z]{2,}$/;
-
-    if (validMail.test(userData.email)) {
-      setUserData({ ...userData, email: userData.email });
-      return true;
-    } else {
-      alert("Please enter a valid email address");
-      return false;
-    }
-  };
-
-    // wrong implementation for store data method
   const storeData = async (value) => {
     try {
-      await AsyncStorage.setItem("completed", JSON.stringify(userData));
+      await AsyncStorage.setItem("userInfo", JSON.stringify(userData));
       // console.log(userData);
       setisOnboardingCompleted(value);
     } catch (e) {
@@ -56,7 +32,7 @@ const Onboarding = () => {
 
   const handlePress = () => {
     if (userData.firstName && userData.email) {
-      if (validateMail() && validateName()) {
+      if (validateMail(userData, setUserData) && validateName(userData, setUserData)) {
         storeData(true);
         return true;
       }
@@ -87,12 +63,9 @@ const Onboarding = () => {
             placeholder="Leo"
             placeholderTextColor="#B1B1B1"
             value={userData.name}
-            onChangeText={(firstName) =>
-              setUserData({ ...userData, firstName: firstName })
-            }
-            onBlur={validateName}
+            onChangeText={(firstName) => setUserData({ ...userData, firstName: firstName })}
+            onBlur={() => validateName(userData, setUserData)}
           />
-
           <InputLabeled
             label="Email"
             containerStyle={styles.inputContainer}
@@ -102,10 +75,10 @@ const Onboarding = () => {
             placeholderTextColor="#B1B1B1"
             value={userData.email}
             onChangeText={(email) => setUserData({ ...userData, email: email })}
-            onBlur={validateMail}
+            onBlur={() => validateMail(userData, setUserData)}
           />
         </View>
-        
+
         <View style={styles.bodyNext}>
           <Button
             title="Next"
@@ -131,6 +104,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#EE9972",
     paddingVertical: 10,
+    borderBottomRightRadius: 65,
   },
   logo: {
     width: 260,
@@ -157,6 +131,7 @@ const styles = StyleSheet.create({
     paddingRight: 15,
     paddingTop: 50,
     marginTop: 20,
+    borderTopLeftRadius: 90,
   },
   inputContainer: {
     marginVertical: 15,

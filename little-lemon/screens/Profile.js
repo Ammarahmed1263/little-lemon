@@ -1,16 +1,85 @@
 import { View, Text, StyleSheet, Image, StatusBar } from "react-native"
+import { useState } from "react";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/Ionicons';
 import CheckBox from 'expo-checkbox';
 import { useContext } from "react";
 
+import { validateMail, validateName } from "../utils/validations";
 import { OnboardingContext } from "../src/components/CreateContext";
 import InputLabeled from "../src/components/InputLabeled";
 import Button from "../src/components/Button";
 import DefaultImage from "../src/components/DefaultImage";
+import { MaskedTextInput } from "react-native-mask-text";
 
 const Profile = () => {
-    const { userData, setUserData } = useContext(OnboardingContext);
-    // console.log(userData);
+    const { setisOnboardingCompleted, userData, setUserData } = useContext(OnboardingContext);
+    const [maskedValue, setMaskedValue] = useState('');
+
+    const pickImage = async () => {
+        try {
+            let result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.All,
+                allowsEditing: true,
+                aspect: [4, 3],
+                quality: 1,
+            });
+            
+            console.log(result);
+
+            if (!result.canceled) {
+                setUserData({...userData, image: result.assets[0].uri});
+            }   
+        } catch (e) {
+            console.log('error with images:', e);
+        }
+    }
+
+    const validateNumber = () => {
+      if (maskedValue.length !== "(999) 999-9999".length) {
+        alert('Number is missing');
+        return false;
+      }
+      return true;
+    };
+
+    const handleNumberChange = (masked, unmasked) => {
+        setUserData({...userData, number: masked})
+        setMaskedValue(masked);
+    }
+
+    const toggleCheckbox = (key) => {
+        setUserData({...userData, notification: {...userData.notification, [key]: !userData.notification[key]}});
+    };
+
+    const handleLogout = async () => {
+        try {
+          await AsyncStorage.clear()
+          setUserData({...userData, 
+            firstName: "",
+            lastName: "",
+            email: "",
+            number: "",
+            image: null,
+            notification: {orders: false, password: false, offers: false, newsletter: false},
+          });
+          setisOnboardingCompleted(false);
+        } catch(e) {
+          console.log('error deleting data', e);
+        }
+    }
+
+    const handleSave = async () => {
+        try {
+            if (validateName(userData, setUserData) && validateMail(userData, setUserData) && validateNumber()) {
+                await AsyncStorage.setItem("userInfo", JSON.stringify(userData));
+                const completed = await AsyncStorage.getItem("userInfo");
+                console.log(completed);
+            }
+        } catch (e) {
+            console.log("failed to presist from profile:", e);
+        }
+    };
 
     return (
         <View style={styles.container}>
@@ -48,23 +117,27 @@ const Profile = () => {
                     <Text style={styles.heading}>Personal information</Text>
                     
                     <View style={styles.innerImage}>
-                            {userData.image ? 
-                                (<Image
-                                    source={require('../src/images/Lemon.png')}
-                                    style={styles.profilePicture}
-                                />) : 
-                                (<DefaultImage
-                                    firstLetter={userData?.firstName[0]}
-                                    secondLetter={userData?.lastName[0]}
-                                    viewStyle={styles.profilePicture}
-                                    textStyle={styles.profileLetters}
-                                />)
-                            } 
-                            <Button 
+                        {userData.image ? (
+                            <Image
+                                source={require('../src/images/Lemon.png')}
+                                style={styles.profilePicture}
+                            />
+                        ) : (
+                            <DefaultImage
+                                firstLetter={userData?.firstName[0]}
+                                secondLetter={userData?.lastName[0]}
+                                viewStyle={styles.profilePicture}
+                                textStyle={styles.profileLetters}
+                            />
+                        )
+                        } 
+
+                        <Button 
                             title="Change"
                             style={styles.changeButton}
                             titleStyle={styles.changeTitle}
-                            highlightColor="blue"
+                            highlightColor="#F4CE14"
+                            onPress={pickImage}
                         />
                         <Button 
                             title="Remove"
@@ -82,6 +155,7 @@ const Profile = () => {
                             placeholderTextColor="#B1B1B1"
                             value={userData.firstName}
                             onChangeText={(firstName) => setUserData({...userData, firstName: firstName})}
+                            onBlur={() => validateName(userData, setUserData)}
                         />
                         
                         <InputLabeled
@@ -104,39 +178,56 @@ const Profile = () => {
                             placeholderTextColor="#B1B1B1"
                             value={userData.email}
                             onChangeText={(email) => setUserData({...userData, email: email})}
+                            onBlur={() => validateMail(userData, setUserData)}
                         />
 
-                        <InputLabeled
-                            label='Phone Number'
-                            containerStyle={styles.inputContainer}
-                            labelStyle={styles.label}
-                            inputStyle={styles.textInput}
-                            placeholder="(217) 555-0113"
-                            placeholderTextColor="#B1B1B1"
-                            value={userData.number}
-                            onChangeText={(number) => setUserData({...userData, number: number})}
-                        />
+                        <View style={styles.inputContainer}>
+                            <Text style={styles.label}>Phone Number</Text>
+                            <MaskedTextInput
+                                mask="(999) 999-9999"
+                                placeholder="(217) 555-0113"
+                                placeholderTextColor="#B1B1B1"
+                                style={styles.textInput}
+                                onChangeText={handleNumberChange}
+                                onBlur={validateNumber}
+                            />
+                        </View>
 
                     </View>
                 </View>
-
-                <View style={styles.notificationSection} >
+                <View>
                     <Text style={styles.heading}>Email notification</Text>
                     <View>
                         <View style={styles.checkboxContainer}>
-                            <CheckBox />
-                            <Text style={styles.checkboxText}>Order statuses</Text>
+                            <CheckBox 
+                                value={userData.notification.orders}
+                                color={userData.notification.orders && '#495E57'}
+                                onValueChange={() => toggleCheckbox('orders')}
+                            />
+                            <Text style={styles.checkboxText} >Orders status</Text>
                         </View>
                         <View style={styles.checkboxContainer}>
-                            <CheckBox />
+                            <CheckBox 
+                                value={userData.notification.password}
+                                color={userData.notification.password && '#495E57'}
+                                onValueChange={() => toggleCheckbox('password')}
+                            />
                             <Text style={styles.checkboxText}>Password changes</Text>
                         </View>
                         <View style={styles.checkboxContainer}>
-                            <CheckBox />
+                            <CheckBox 
+                                    value={userData.notification.offers}
+                                    color={userData.notification.offers && '#495E57'}
+                                    onValueChange={() => toggleCheckbox('offers')}
+                            />
                             <Text style={styles.checkboxText}>Special offers</Text>
                         </View>
                         <View style={styles.checkboxContainer}>
-                            <CheckBox />
+                            <CheckBox 
+                                    value={userData.notification.newsletter}
+                                    color={userData.notification.newsletter && '#495E57'}
+                                    onValueChange={() => toggleCheckbox('newsletter')}
+                            />
                             <Text style={styles.checkboxText}>Newsletter</Text>
                         </View>
                     </View>
@@ -147,6 +238,7 @@ const Profile = () => {
                         title="Log out"
                         style={styles.logoutButton}
                         titleStyle={styles.logoutText}
+                        onPress={handleLogout}
                     />
                     
                     <View style={styles.changesArea}>
@@ -159,6 +251,7 @@ const Profile = () => {
                             title="Save changes"
                             style={[styles.changeButton, {marginRight: 15}]}
                             titleStyle={{fontSize: 17, fontWeight: '500'}}
+                            onPress={handleSave}
                         />
                     </View>
                 </View>
@@ -301,7 +394,7 @@ const styles = StyleSheet.create({
         paddingVertical: 5,
         backgroundColor: '#F4CE14',
         borderWidth: 2,
-        borderColor: '#FBDABB',
+        borderColor: '#f88f2d',
         marginTop: 10
     },
     logoutText: {
