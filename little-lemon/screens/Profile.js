@@ -11,10 +11,12 @@ import InputLabeled from "../src/components/InputLabeled";
 import Button from "../src/components/Button";
 import DefaultImage from "../src/components/DefaultImage";
 import { MaskedTextInput } from "react-native-mask-text";
+import * as ImagePicker from 'expo-image-picker';
 
 const Profile = () => {
     const { setisOnboardingCompleted, userData, setUserData } = useContext(OnboardingContext);
     const [maskedValue, setMaskedValue] = useState('');
+    console.log(userData);
 
     const pickImage = async () => {
         try {
@@ -73,8 +75,7 @@ const Profile = () => {
         try {
             if (validateName(userData, setUserData) && validateMail(userData, setUserData) && validateNumber()) {
                 await AsyncStorage.setItem("userInfo", JSON.stringify(userData));
-                const completed = await AsyncStorage.getItem("userInfo");
-                console.log(completed);
+                alert('Changes saved successfully');
             }
         } catch (e) {
             console.log("failed to presist from profile:", e);
@@ -85,30 +86,29 @@ const Profile = () => {
         <View style={styles.container}>
             <StatusBar barStyle='dark-content' backgroundColor='#EDEFEE'/>
 
-            
             <View style={styles.header}>
-            <Button style={styles.backButton}>
-                <View style={styles.iconContainer}>
-                    <Icon
-                    name="ios-arrow-back"
-                    size={28}
-                    color='#EDEFEE'
-                    />
-                </View>
-            </Button>
-                <Image source={require('../src/images/Logo.png')} style={styles.logo}/>
-                {userData.image ? 
-                    (<Image
-                        source={require('../src/images/Lemon.png')}
-                        style={styles.headerPic}
-                    />) : 
-                    (<DefaultImage 
-                        firstLetter={userData?.firstName[0]}
-                        secondLetter={userData?.lastName[0]}
-                        viewStyle={styles.headerPic}
-                        textStyle={styles.headerLetters}
-                    />)
-                }
+                <Button style={styles.backButton}>
+                    <View style={styles.iconContainer}>
+                        <Icon
+                        name="ios-arrow-back"
+                        size={28}
+                        color='#EDEFEE'
+                        />
+                    </View>
+                </Button>
+                    <Image source={require('../src/images/Logo.png')} style={styles.logo}/>
+                    {userData.image ? 
+                        (<Image
+                            source={{uri: userData.image}}
+                            style={styles.headerPic}
+                        />) : 
+                        (<DefaultImage 
+                            firstLetter={userData?.firstName[0]}
+                            secondLetter={userData?.lastName[0]}
+                            viewStyle={styles.headerPic}
+                            textStyle={styles.headerLetters}
+                        />)
+                    }
             </View>
             
             <View style={styles.page}>
@@ -119,7 +119,7 @@ const Profile = () => {
                     <View style={styles.innerImage}>
                         {userData.image ? (
                             <Image
-                                source={require('../src/images/Lemon.png')}
+                                source={{uri: userData.image}}
                                 style={styles.profilePicture}
                             />
                         ) : (
@@ -142,7 +142,10 @@ const Profile = () => {
                         <Button 
                             title="Remove"
                             titleStyle={styles.removeTitle}
-                            style={styles.removeButton} />
+                            style={styles.removeButton}
+                            highlightColor="#cfcfcf"
+                            onPress={() => setUserData({...userData, image:  null})}
+                        />
                     </View>
                 
                     <View> 
@@ -235,7 +238,7 @@ const Profile = () => {
 
                 <View style={styles.buttonSection}>
                     <Button
-                        title="Log out"
+                        title="Log Out"
                         style={styles.logoutButton}
                         titleStyle={styles.logoutText}
                         onPress={handleLogout}
@@ -246,11 +249,13 @@ const Profile = () => {
                             title="Discard changes"
                             style={[styles.removeButton, {marginLeft: 15}]}
                             titleStyle={{fontSize: 17, color: '#495E57'}}
+                            highlightColor="#cfcfcf"
                         />
                         <Button 
                             title="Save changes"
                             style={[styles.changeButton, {marginRight: 15}]}
                             titleStyle={{fontSize: 17, fontWeight: '500'}}
+                            highlightColor="#F4CE14"
                             onPress={handleSave}
                         />
                     </View>
@@ -263,6 +268,7 @@ const Profile = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: '#EDEFEE'
     },
     header: {
         flex: 0.08,
@@ -298,10 +304,11 @@ const styles = StyleSheet.create({
     page: {
         flex: 0.92,
         borderRadius: 25,
-        borderWidth: 2,
+        borderWidth: 1,
         borderColor: '#CCC',
         padding: 10,
-        margin: 7,
+        marginHorizontal: 5,
+        marginBottom: 10
     },
     heading: {
         fontSize: 25,
@@ -344,6 +351,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
     },
     profilePicture: {
+        resizeMode: 'cover',
         width: 80,
         height: 80,
         borderRadius: 40,
@@ -356,13 +364,13 @@ const styles = StyleSheet.create({
     },
     inputContainer: {
         marginHorizontal: 5,
-        paddingVertical : 4
+        paddingVertical : 6
     },
     textInput: {
         color: '#5e5e5e',
         fontSize: 14,
         fontWeight: '500',
-        paddingVertical: 4,
+        paddingVertical: 7,
         paddingHorizontal: 10,
         borderRadius: 10,
         borderWidth: 2,
@@ -390,8 +398,7 @@ const styles = StyleSheet.create({
     logoutButton: {
         borderRadius: 8,
         alignItems: 'center',
-        paddingHorizontal: 40,
-        paddingVertical: 5,
+        paddingVertical: 8,
         backgroundColor: '#F4CE14',
         borderWidth: 2,
         borderColor: '#f88f2d',
@@ -399,6 +406,7 @@ const styles = StyleSheet.create({
     },
     logoutText: {
         color: '#333',
+        fontWeight: '700',
         fontSize: 22,
     },
     changesArea: {
