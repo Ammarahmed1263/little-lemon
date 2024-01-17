@@ -6,10 +6,11 @@ import { useContext } from "react";
 import { OnboardingContext } from "../src/components/CreateContext";
 import InputLabeled from "../src/components/InputLabeled";
 import Button from "../src/components/Button";
+import DefaultImage from "../src/components/DefaultImage";
 
 const Profile = () => {
     const { userData, setUserData } = useContext(OnboardingContext);
-    console.log(userData);
+    // console.log(userData);
 
     return (
         <View style={styles.container}>
@@ -27,7 +28,18 @@ const Profile = () => {
                 </View>
             </Button>
                 <Image source={require('../src/images/Logo.png')} style={styles.logo}/>
-                <Image source={require('../src/images/Lemon.png')} style={styles.headerPic}/>
+                {userData.image ? 
+                    (<Image
+                        source={require('../src/images/Lemon.png')}
+                        style={styles.headerPic}
+                    />) : 
+                    (<DefaultImage 
+                        firstLetter={userData?.firstName[0]}
+                        secondLetter={userData?.lastName[0]}
+                        viewStyle={styles.headerPic}
+                        textStyle={styles.headerLetters}
+                    />)
+                }
             </View>
             
             <View style={styles.page}>
@@ -36,8 +48,19 @@ const Profile = () => {
                     <Text style={styles.heading}>Personal information</Text>
                     
                     <View style={styles.innerImage}>
-                        <Image source={require('../src/images/Lemon.png')} style={styles.profilePicture}/>
-                        <Button 
+                            {userData.image ? 
+                                (<Image
+                                    source={require('../src/images/Lemon.png')}
+                                    style={styles.profilePicture}
+                                />) : 
+                                (<DefaultImage
+                                    firstLetter={userData?.firstName[0]}
+                                    secondLetter={userData?.lastName[0]}
+                                    viewStyle={styles.profilePicture}
+                                    textStyle={styles.profileLetters}
+                                />)
+                            } 
+                            <Button 
                             title="Change"
                             style={styles.changeButton}
                             titleStyle={styles.changeTitle}
@@ -172,7 +195,12 @@ const styles = StyleSheet.create({
         width: 55,
         height: 55,
         borderRadius: 27,
-        backgroundColor: '#BBB'
+        backgroundColor: '#495E57',
+    },
+    headerLetters: {
+        fontSize: 25,
+        fontWeight: 600,
+        color: '#F4CE14'
     },
     page: {
         flex: 0.92,
@@ -223,17 +251,22 @@ const styles = StyleSheet.create({
         fontSize: 18,
     },
     profilePicture: {
-        width: 90,
-        height: 90,
-        borderRadius: 45,
-        backgroundColor: '#BBB',
+        width: 80,
+        height: 80,
+        borderRadius: 40,
+        backgroundColor: '#F4CE14',
+    },
+    profileLetters: {
+        fontSize: 38,
+        fontWeight: 600,
+        color: '#495E57'
     },
     inputContainer: {
         marginHorizontal: 5,
         paddingVertical : 4
     },
     textInput: {
-        color: '#EDEFEE',
+        color: '#5e5e5e',
         fontSize: 14,
         fontWeight: '500',
         paddingVertical: 4,
