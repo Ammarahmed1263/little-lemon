@@ -13,15 +13,22 @@ const Stack = createNativeStackNavigator();
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [isOnboardingCompleted, setisOnboardingCompleted] = useState(false);
-  const [userData, setUserData] = useState({ firstName: "", lastName: "", email: "", number: "", image: null});
+  const [userData, setUserData] = useState({ 
+    firstName: "",
+    lastName: "",
+    email: "",
+    number: "",
+    image: null,
+    notification: {orders: false, password: false, offers: false, newsletter: false},
+  });
+  // console.log(userData);
 
   useEffect(() => {
     (async () => {
       try {
         // await AsyncStorage.clear();
         // console.log('cleared? successfully', isOnboardingCompleted);
-        const completed = await AsyncStorage.getItem("completed");
-        console.log(completed);
+        const completed = await AsyncStorage.getItem("userInfo");
         if (completed !== null) {
           setisOnboardingCompleted(true);
         }
