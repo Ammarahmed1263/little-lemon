@@ -30,7 +30,6 @@ export default function App() {
         // await AsyncStorage.clear();
         // console.log('cleared? successfully', isOnboardingCompleted);
         const completed = await AsyncStorage.getItem("userInfo");
-        console.log('here', typeof(completed));
         if (completed !== null) {
           setUserData({...userData, ...JSON.parse(completed)});
           setisOnboardingCompleted(true);

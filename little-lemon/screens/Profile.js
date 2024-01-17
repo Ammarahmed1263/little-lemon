@@ -82,6 +82,20 @@ const Profile = () => {
         }
     };
 
+    const handleDiscard = async () => {
+        console.log('clicked');
+        try {
+            const userinfo = await AsyncStorage.getItem("userInfo");
+            if (userinfo !== null) {
+              setUserData({...userData, ...JSON.parse(userinfo)});
+            } else {
+                alert('user not saved');
+            }
+        } catch (e) {
+            console.log('error discarding changes:', e);
+        }
+    }
+
     return (
         <View style={styles.container}>
             <StatusBar barStyle='dark-content' backgroundColor='#EDEFEE'/>
@@ -192,6 +206,7 @@ const Profile = () => {
                                 placeholderTextColor="#B1B1B1"
                                 style={styles.textInput}
                                 onChangeText={handleNumberChange}
+                                value={userData.number}
                                 onBlur={validateNumber}
                             />
                         </View>
@@ -250,6 +265,7 @@ const Profile = () => {
                             style={[styles.removeButton, {marginLeft: 15}]}
                             titleStyle={{fontSize: 17, color: '#495E57'}}
                             highlightColor="#cfcfcf"
+                            onPress={handleDiscard}
                         />
                         <Button 
                             title="Save changes"
