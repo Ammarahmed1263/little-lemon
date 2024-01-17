@@ -3,7 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import Onboarding from './screens/Onboarding';
+import Onboarding from './screens/Boarding';
 import Profile from './screens/Profile';
 import SplashScreen from './screens/SplashScreen';
 import { OnboardingContext } from './src/components/CreateContext';
@@ -20,9 +20,10 @@ export default function App() {
       try {
         // await AsyncStorage.clear();
         // console.log('cleared? successfully', isOnboardingCompleted);
-        const completed = await AsyncStorage.getItem('completed');
+        const completed = await AsyncStorage.getItem("completed");
+        console.log(completed);
         if (completed !== null) {
-          setisOnboardingCompleted(JSON.parse(completed));
+          setisOnboardingCompleted(true);
         }
         setIsLoading(false);
       } catch(e) {

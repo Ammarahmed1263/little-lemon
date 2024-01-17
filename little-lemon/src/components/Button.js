@@ -1,7 +1,7 @@
 import { Pressable,StyleSheet,Text } from "react-native";
 import { useState } from 'react'
 
-const Button = ({title, disabled, style, disabledStyle, titleStyle, disabledTitle, children, highlightColor, ...props}) => {
+const Button = ({title, disabled, style, disabledStyle, titleStyle, children, highlightColor, ...props}) => {
     const [pressed, setPressed] = useState(false);
 
     const handlePressIn = () => {
@@ -31,7 +31,7 @@ const Button = ({title, disabled, style, disabledStyle, titleStyle, disabledTitl
             {...props}
         >
             {children}
-            {!children && <Text style={[styles.buttonText, titleStyle, disabled && [styles.textDisabled, disabledTitle]]}>{title}</Text>}
+            {!children && <Text style={[styles.buttonText, titleStyle, disabled && styles.textDisabled]}>{title}</Text>}
         </Pressable>
     )
 }
