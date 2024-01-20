@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Onboarding from './screens/Boarding';
 import Profile from './screens/Profile';
+import Home from './screens/Home';
 import SplashScreen from './screens/SplashScreen';
 import { OnboardingContext } from './src/components/CreateContext';
 
@@ -23,7 +24,6 @@ export default function App() {
   });
   // console.log(userData);
 
-  // item retrieved need to be stored as userData but how?
   useEffect(() => {
     (async () => {
       try {
@@ -52,9 +52,12 @@ export default function App() {
       <NavigationContainer>
         <Stack.Navigator screenOptions={{headerShown: false}}>
           {isOnboardingCompleted ? (
-            <Stack.Screen name="profile" component={Profile} />
+            <>
+              <Stack.Screen name="Home" component={Home} />
+              <Stack.Screen name="Profile" component={Profile} />
+            </>
           ) : (
-            <Stack.Screen name="onboarding" component={Onboarding} />
+            <Stack.Screen name="Onboarding" component={Onboarding} />
           )}
         </Stack.Navigator>
       </NavigationContainer>

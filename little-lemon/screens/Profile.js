@@ -13,7 +13,7 @@ import DefaultImage from "../src/components/DefaultImage";
 import { MaskedTextInput } from "react-native-mask-text";
 import * as ImagePicker from 'expo-image-picker';
 
-const Profile = () => {
+const Profile = ({ navigation }) => {
     const { setisOnboardingCompleted, userData, setUserData } = useContext(OnboardingContext);
     const [maskedValue, setMaskedValue] = useState('');
     console.log(userData);
@@ -45,7 +45,7 @@ const Profile = () => {
       return true;
     };
 
-    const handleNumberChange = (masked, unmasked) => {
+    const handleNumberChange = (masked, _) => {
         setUserData({...userData, number: masked})
         setMaskedValue(masked);
     }
@@ -101,7 +101,11 @@ const Profile = () => {
             <StatusBar barStyle='dark-content' backgroundColor='#EDEFEE'/>
 
             <View style={styles.header}>
-                <Button style={styles.backButton}>
+                <Button 
+                    style={styles.backButton}
+                    onPress={() => navigation.navigate('Home')}
+                    highlightColor='#D4D4D4'
+                >
                     <View style={styles.iconContainer}>
                         <Icon
                         name="ios-arrow-back"
@@ -110,7 +114,7 @@ const Profile = () => {
                         />
                     </View>
                 </Button>
-                    <Image source={require('../src/images/Logo.png')} style={styles.logo}/>
+                    <Image source={require('../src/images/Logo.png')} />
                     {userData.image ? 
                         (<Image
                             source={{uri: userData.image}}
@@ -157,7 +161,7 @@ const Profile = () => {
                             title="Remove"
                             titleStyle={styles.removeTitle}
                             style={styles.removeButton}
-                            highlightColor="#cfcfcf"
+                            highlightColor="#B1B1B1"
                             onPress={() => setUserData({...userData, image:  null})}
                         />
                     </View>
@@ -294,7 +298,6 @@ const styles = StyleSheet.create({
         marginHorizontal: 8,
     },
     backButton: {
-        backgroundColor: '#495E57',
         color: '#EDEFEE',
         width: 40,
         height: 40,
