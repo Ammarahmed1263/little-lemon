@@ -1,5 +1,5 @@
 import { Pressable,StyleSheet,Text } from "react-native";
-import { useState } from 'react'
+import { useState, cloneElement } from 'react'
 
 const Button = ({title, disabled, style, disabledStyle, titleStyle, children, highlightColor, ...props}) => {
     const [pressed, setPressed] = useState(false);
@@ -21,8 +21,7 @@ const Button = ({title, disabled, style, disabledStyle, titleStyle, children, hi
               (style?.backgroundColor ? style.backgroundColor : "#495E57")}
     ];
       
-       
-
+    
     return (
         <Pressable 
             style={buttonStyles}
@@ -30,8 +29,10 @@ const Button = ({title, disabled, style, disabledStyle, titleStyle, children, hi
             onPressOut={handlePressOut}
             {...props}
         >
-            {children}
-            {!children && <Text style={[styles.buttonText, titleStyle, disabled && styles.textDisabled]}>{title}</Text>}
+            {children ? 
+                cloneElement(children, {style: {...children.props.style, opacity: pressed ? 0.5 : 1}}) : 
+                <Text style={[styles.buttonText, titleStyle, disabled && styles.textDisabled]}>{title}</Text>
+            }        
         </Pressable>
     )
 }
