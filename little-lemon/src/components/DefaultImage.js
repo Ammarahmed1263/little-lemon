@@ -14,10 +14,9 @@ export default DefaultImage = ({firstLetter, secondLetter, viewStyle, textStyle}
 
 const styles = StyleSheet.create({
     container: {
-        width: 90,
-        height: 90,
-        borderRadius: 45,
-        backgroundColor: '#E2E2E2',
+        width: 20,
+        height: 20,
+        borderRadius: 10,
         justifyContent: 'center',
         alignItems: 'center'
     },
