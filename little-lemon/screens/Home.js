@@ -4,19 +4,22 @@ import { useContext, useEffect, useState } from "react"
 import { OnboardingContext } from "../src/components/CreateContext"
 import * as SQLite from 'expo-sqlite';
 import Button from "../src/components/Button"
+import CategoriesList from "../src/components/CategoriesList";
 import axios from "axios"
 
 const db = SQLite.openDatabase('little_lemon');
+const categories = ['starters', 'mains', 'desserts', 'drinks'];
 
 const Home = ({ navigation }) => {
     const { userData } =  useContext(OnboardingContext)
     const [isLoading, setIsLoading] = useState(true)
     const [menu, setMenu] = useState([])
+    console.log(menu);
 
     const menuRender = ({item, index}) => {
         return (
             <View key={index + item} style={styles.menuInnerContainer}>
-                <View style={{ flex: 3 }}>
+                <View style={{ flex: 2.3 }}>
                     <Text style={styles.itemHeader}>{item.name}</Text>
                     <Text style={styles.itemDescription}>{item.description}</Text>
                     <Text style={styles.itemPrice}>${item.price}</Text>
@@ -26,19 +29,15 @@ const Home = ({ navigation }) => {
         )
     }
     
-    const ItemSeparator = () => (
-        <View style={{ height: 1, width: "95%", backgroundColor: "#cacaca" }} />
-    );
-
     const ListHeader = () => (
-        <View style={{ height: 1, width: "98%", backgroundColor: "#8b8b8b" }} />
+        <View style={{ height: 1, width: "100%", backgroundColor: "#8b8b8b" }} />
     );
 
 
     useEffect(() => {
         db.transaction(tx => {
             tx.executeSql(`CREATE TABLE IF NOT EXISTS menu (id INTEGER PRIMARY KEY, 
-                name TEXT, description TEXT, price INTEGER, image TEXT)`,
+                name TEXT, description TEXT, price INTEGER, category TEXT, image TEXT)`,
                 [],
                 () => FetchOrLoadMenu(),
                 (_, error) => console.log('table creation failed:', error)
@@ -48,7 +47,7 @@ const Home = ({ navigation }) => {
 
     const FetchOrLoadMenu = () => {
         db.transaction(tx => {
-            tx.executeSql("SELECT * FROM menu", 
+            tx.executeSql("SELECT name, description, price, category, image FROM menu", 
                 [],
                 (_, { rows }) => {
                     if (rows.length === 0){
@@ -86,8 +85,8 @@ const Home = ({ navigation }) => {
     const storeMenu = () => {
         db.transaction(tx => {
             menu.forEach((element) => {
-                tx.executeSql('INSERT INTO menu (name, description, price, image) VALUES (?,?,?,?)',
-                    [element.name, element.description, element.price * 100, element.image],
+                tx.executeSql('INSERT INTO menu (name, description, price, category, image) VALUES (?,?,?,?, ?)',
+                    [element.name, element.description, element.price * 100, element.category, element.image],
                     null,
                     (_, error) => console.log('insertion failed', error)
                 )
@@ -120,7 +119,15 @@ const Home = ({ navigation }) => {
                 </Button>
             </View>
             
-            <View style={{flex: 3}}></View>
+            <View style={{flex: 4}}>
+
+            </View>
+            <View style={styles.categoriesContainer}>
+                <View>
+                    <Text style={styles.orderText}>order for delivery!</Text>
+                    <CategoriesList categories={categories}/>
+                </View>
+            </View>
 
             <View style={styles.menuContainer}>
                 {isLoading ?
@@ -131,7 +138,6 @@ const Home = ({ navigation }) => {
                         renderItem={menuRender}
                         keyExtractor={item => item.name + item.price}
                         ListHeaderComponent={ListHeader}
-                        ItemSeparatorComponent={ItemSeparator}
                         showsVerticalScrollIndicator={false}
                     />
                 }
@@ -165,6 +171,17 @@ const styles = StyleSheet.create({
         height: 55,
         borderRadius: 27,
     },
+    categoriesContainer: {
+        flex: 1.2,
+        paddingBottom: 15,
+        marginLeft: 15
+    },
+    orderText: {
+        fontSize: 25,
+        fontWeight: 'bold',
+        textTransform: 'uppercase',
+        paddingBottom: 5,
+    },
     menuContainer: {
         flex: 5,
         marginHorizontal: 15,
@@ -174,6 +191,8 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         paddingVertical: 17,
+        borderBottomColor: '#CECECE',
+        borderBottomWidth: 1
     },
     itemHeader: {
         fontSize: 23,
@@ -196,6 +215,5 @@ const styles = StyleSheet.create({
         resizeMode: 'cover',
         width: '72%',
         height: '70%',
-        marginLeft: 10
     }
 })

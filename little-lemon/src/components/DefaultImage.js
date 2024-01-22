@@ -2,8 +2,8 @@ import { View, Text, StyleSheet } from "react-native";
 
 
 export default DefaultImage = ({firstLetter, secondLetter, viewStyle, textStyle}) => {
-    firstLetter = firstLetter ? firstLetter : 'A';
-    secondLetter = secondLetter ? secondLetter : 'Z';
+    firstLetter = firstLetter ? firstLetter : '';
+    secondLetter = secondLetter ? secondLetter : '';
 
     return (
         <View style={[styles.container, viewStyle]}>
