@@ -1,13 +1,12 @@
+import axios from "axios"
 import { View, Text, StyleSheet, Image, StatusBar, ActivityIndicator, FlatList } from "react-native"
-import DefaultImage from "../src/components/DefaultImage"
 import { useContext, useEffect, useState } from "react"
 import { OnboardingContext } from "../src/components/CreateContext"
-import * as SQLite from 'expo-sqlite';
+import { createTable, getMenuItems, storeMenu } from '../src/components/database';
+import DefaultImage from "../src/components/DefaultImage"
 import Button from "../src/components/Button"
 import CategoriesList from "../src/components/CategoriesList";
-import axios from "axios"
 
-const db = SQLite.openDatabase('little_lemon');
 const categories = ['starters', 'mains', 'desserts', 'drinks'];
 
 const Home = ({ navigation }) => {
@@ -35,34 +34,22 @@ const Home = ({ navigation }) => {
 
 
     useEffect(() => {
-        db.transaction(tx => {
-            tx.executeSql(`CREATE TABLE IF NOT EXISTS menu (id INTEGER PRIMARY KEY, 
-                name TEXT, description TEXT, price INTEGER, category TEXT, image TEXT)`,
-                [],
-                () => FetchOrLoadMenu(),
-                (_, error) => console.log('table creation failed:', error)
-            );
-        })
+        createTable(fetchOrLoadMenu)
     }, [])
 
-    const FetchOrLoadMenu = () => {
-        db.transaction(tx => {
-            tx.executeSql("SELECT name, description, price, category, image FROM menu", 
-                [],
-                (_, { rows }) => {
-                    if (rows.length === 0){
-                        fetchMenu();
-                    } else {
-                        const menu = rows._array.map(item => ({
-                            ...item,
-                            price: item.price / 100,
-                        }));
-                        setMenu(menu);
-                        setIsLoading(false);
-                    }
-                }
-            )
-        })
+    const fetchOrLoadMenu = async () => {
+        const menuItems = await getMenuItems()
+
+        if (menuItems.length === 0){
+            fetchMenu();
+        } else {
+            const menu = menuItems.map(item => ({
+                ...item,
+                price: item.price / 100,
+            }));
+            setMenu(menu);
+            setIsLoading(false);
+        }
     }
 
     const fetchMenu = async () => {
@@ -82,17 +69,6 @@ const Home = ({ navigation }) => {
         }
     }
 
-    const storeMenu = () => {
-        db.transaction(tx => {
-            menu.forEach((element) => {
-                tx.executeSql('INSERT INTO menu (name, description, price, category, image) VALUES (?,?,?,?, ?)',
-                    [element.name, element.description, element.price * 100, element.category, element.image],
-                    null,
-                    (_, error) => console.log('insertion failed', error)
-                )
-            })
-        })
-    }
 
     return (
         <View style={{flex: 1, backgroundColor: '#EDEFEE'}}>
