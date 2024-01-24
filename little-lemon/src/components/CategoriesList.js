@@ -1,8 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FlatList, StyleSheet, TouchableOpacity, Text } from "react-native";
 
-const CategoriesList = ({ categories }) => {
+const CategoriesList = ({ categories, onCategoriesSelect }) => {
     const [selectedCategories, setSelectedCategories] = useState([])
+    
+    useEffect(() => {
+        onCategoriesSelect(selectedCategories);
+      }, [selectedCategories]);
 
     const renderSelected = ({ item }) => {
         return (
@@ -42,7 +46,7 @@ const styles = StyleSheet.create({
     category: {
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#d2d2d2',
+        backgroundColor: '#dedede',
         paddingVertical: 10,
         paddingHorizontal: 18,
         borderRadius: 20,

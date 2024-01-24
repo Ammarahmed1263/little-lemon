@@ -1,11 +1,13 @@
 import axios from "axios"
-import { View, Text, StyleSheet, Image, StatusBar, ActivityIndicator, FlatList } from "react-native"
+import { View, Text, StyleSheet, Image, StatusBar, ActivityIndicator, FlatList, KeyboardAvoidingView } from "react-native"
 import { useContext, useEffect, useState } from "react"
 import { OnboardingContext } from "../src/components/CreateContext"
-import { createTable, getMenuItems, storeMenu } from '../utils/database';
+import { createTable, getMenuItems, storeMenu, filterByCategories } from '../utils/database';
 import DefaultImage from "../src/components/DefaultImage"
 import Button from "../src/components/Button"
 import CategoriesList from "../src/components/CategoriesList";
+import useUpdateEffect from "../utils/useUpdateEffect";
+import MainBanner from "../src/components/MainBanner";
 
 const categories = ['starters', 'mains', 'desserts', 'drinks'];
 
@@ -13,7 +15,7 @@ const Home = ({ navigation }) => {
     const { userData } =  useContext(OnboardingContext)
     const [isLoading, setIsLoading] = useState(true)
     const [menu, setMenu] = useState([])
-    console.log(menu);
+    const [onSelection, setOnSelection] = useState([]);
 
     const menuRender = ({item, index}) => {
         return (
@@ -31,11 +33,6 @@ const Home = ({ navigation }) => {
     const ListHeader = () => (
         <View style={{ height: 1, width: "100%", backgroundColor: "#8b8b8b" }} />
     );
-
-
-    useEffect(() => {
-        createTable(fetchOrLoadMenu)
-    }, [])
 
     const fetchOrLoadMenu = async () => {
         const menuItems = await getMenuItems()
@@ -69,9 +66,28 @@ const Home = ({ navigation }) => {
         }
     }
 
+    const handleSelectedCategories = (selectedCategory) => {
+        setOnSelection(selectedCategory)
+    }
+
+    useEffect(() => {
+        createTable(fetchOrLoadMenu)
+    }, [])
+
+
+    useUpdateEffect(() => {
+        (async () => {
+            const filteredOutput = await filterByCategories(onSelection)
+            const categorizedMenu = filteredOutput.map(item => ({
+                ...item,
+                price: item.price / 100,
+            }));
+            setMenu(categorizedMenu);
+        })()
+    }, [onSelection])
 
     return (
-        <View style={{flex: 1, backgroundColor: '#EDEFEE'}}>
+        <KeyboardAvoidingView style={styles.Container}>
             <View style={styles.header}>
                 <Image source={require('../src/images/Logo.png')} />
                 
@@ -95,13 +111,19 @@ const Home = ({ navigation }) => {
                 </Button>
             </View>
             
-            <View style={{flex: 4}}>
+            <View style={styles.bannerContainer}>
+                    <MainBanner 
 
+                    />
             </View>
+
             <View style={styles.categoriesContainer}>
                 <View>
                     <Text style={styles.orderText}>order for delivery!</Text>
-                    <CategoriesList categories={categories}/>
+                    <CategoriesList
+                        categories={categories}
+                        onCategoriesSelect={handleSelectedCategories}
+                    />
                 </View>
             </View>
 
@@ -120,15 +142,19 @@ const Home = ({ navigation }) => {
             </View>
 
             <StatusBar barStyle='dark-content' backgroundColor='#EDEFEE'/>
-        </View>
+        </KeyboardAvoidingView>
     )
 }
 
 export default Home;
 
 const styles = StyleSheet.create({
-    header: {
+    Container: {
         flex: 1,
+        backgroundColor: '#EDEFEE'
+    },
+    header: {
+        flex: 0.9,
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
@@ -146,6 +172,12 @@ const styles = StyleSheet.create({
         width: 55,
         height: 55,
         borderRadius: 27,
+    },
+    bannerContainer: {
+        flex: 4.5,
+        backgroundColor: '#495E57',
+        marginBottom: 35,
+        marginTop: 5
     },
     categoriesContainer: {
         flex: 1.2,

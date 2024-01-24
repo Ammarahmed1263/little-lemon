@@ -4,7 +4,7 @@ import { useState } from "react";
 
 const MainBanner = () => {
     const [query, setQuery] = useState('')
-    
+
     const [fontsLoaded] = useFonts({
         "Markazi Text": require("../fonts/MarkaziText.ttf"),
         "Karla": require("../fonts/Karla.ttf")
