@@ -59,7 +59,6 @@ const Home = ({ navigation }) => {
             })
             setMenu(dishes);
             storeMenu(dishes);
-            console.log(dishes)
         } catch (e) {
             console.log("failed to fetch menu: ", e);
         } finally {

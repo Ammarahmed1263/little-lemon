@@ -16,7 +16,6 @@ import * as ImagePicker from 'expo-image-picker';
 const Profile = ({ navigation }) => {
     const { setisOnboardingCompleted, userData, setUserData } = useContext(OnboardingContext);
     const [maskedValue, setMaskedValue] = useState('');
-    console.log(userData);
 
     const pickImage = async () => {
         try {
@@ -27,8 +26,6 @@ const Profile = ({ navigation }) => {
                 quality: 1,
             });
             
-            console.log(result);
-
             if (!result.canceled) {
                 setUserData({...userData, image: result.assets[0].uri});
             }   
@@ -83,7 +80,6 @@ const Profile = ({ navigation }) => {
     };
 
     const handleDiscard = async () => {
-        console.log('clicked');
         try {
             const userinfo = await AsyncStorage.getItem("userInfo");
             if (userinfo !== null) {

@@ -22,13 +22,10 @@ export default function App() {
     image: null,
     notification: {orders: false, password: false, offers: false, newsletter: false},
   });
-  // console.log(userData);
 
   useEffect(() => {
     (async () => {
       try {
-        // await AsyncStorage.clear();
-        // console.log('cleared? successfully', isOnboardingCompleted);
         const completed = await AsyncStorage.getItem("userInfo");
         if (completed !== null) {
           setUserData({...userData, ...JSON.parse(completed)});

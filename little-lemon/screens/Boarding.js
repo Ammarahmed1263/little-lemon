@@ -22,7 +22,6 @@ const Onboarding = () => {
   const storeData = async (value) => {
     try {
       await AsyncStorage.setItem("userInfo", JSON.stringify(userData));
-      // console.log(userData);
       setisOnboardingCompleted(value);
     } catch (e) {
       console.log("failed to presist", e);
