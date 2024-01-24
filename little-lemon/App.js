@@ -48,19 +48,19 @@ export default function App() {
   }
 
   return (
-    <OnboardingContext.Provider value={{setisOnboardingCompleted, userData, setUserData}}>
-      <NavigationContainer>
-        <Stack.Navigator screenOptions={{headerShown: false}}>
-          {isOnboardingCompleted ? (
-            <>
-              <Stack.Screen name="Home" component={Home} />
-              <Stack.Screen name="Profile" component={Profile} />
-            </>
-          ) : (
-            <Stack.Screen name="Onboarding" component={Onboarding} />
-          )}
-        </Stack.Navigator>
-      </NavigationContainer>
-    </OnboardingContext.Provider>
+      <OnboardingContext.Provider value={{setisOnboardingCompleted, userData, setUserData}}>
+        <NavigationContainer>
+          <Stack.Navigator screenOptions={{headerShown: false}}>
+            {isOnboardingCompleted ? (
+              <>
+                <Stack.Screen name="Home" component={Home} />
+                <Stack.Screen name="Profile" component={Profile} />
+              </>
+            ) : (
+              <Stack.Screen name="Onboarding" component={Onboarding} />
+            )}
+          </Stack.Navigator>
+        </NavigationContainer>
+      </OnboardingContext.Provider>      
   );
 }

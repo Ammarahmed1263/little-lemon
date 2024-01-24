@@ -39,15 +39,16 @@ export const storeMenu = (menu) => {
     })
 }
 
-export const filterByCategories = async (categories) => {
+export const filterByQueryAndCategories = async (categories, query) => {
     // if no categories are selected
     categories = categories.length ? categories : sections;
     placeHolder = categories.map(() => '?').join();
-
+    const dependencies = ['%' + query + '%', ...categories]
+    
     return new Promise((resolve, reject) => {
         db.transaction(tx => {
-            tx.executeSql(`SELECT name, description, price, category, image FROM menu WHERE category IN (${placeHolder})`, 
-                [...categories],
+            tx.executeSql(`SELECT name, description, price, category, image FROM menu WHERE name LIKE ? AND category IN (${placeHolder})`, 
+                dependencies,
                 (_, { rows }) => resolve(rows._array),
                 (_, error) => console.log('failed to retrieve categories: ', error)
             )

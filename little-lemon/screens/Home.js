@@ -1,8 +1,8 @@
 import axios from "axios"
-import { View, Text, StyleSheet, Image, StatusBar, ActivityIndicator, FlatList, KeyboardAvoidingView } from "react-native"
+import { View, Text, StyleSheet, Image, StatusBar, ActivityIndicator, FlatList, TouchableWithoutFeedback, Keyboard} from "react-native"
 import { useContext, useEffect, useState } from "react"
 import { OnboardingContext } from "../src/components/CreateContext"
-import { createTable, getMenuItems, storeMenu, filterByCategories } from '../utils/database';
+import { createTable, getMenuItems, storeMenu, filterByQueryAndCategories } from '../utils/database';
 import DefaultImage from "../src/components/DefaultImage"
 import Button from "../src/components/Button"
 import CategoriesList from "../src/components/CategoriesList";
@@ -16,11 +16,12 @@ const Home = ({ navigation }) => {
     const [isLoading, setIsLoading] = useState(true)
     const [menu, setMenu] = useState([])
     const [onSelection, setOnSelection] = useState([]);
+    const [deboucedText, setDeboucedText] = useState('')
 
     const menuRender = ({item, index}) => {
         return (
             <View key={index + item} style={styles.menuInnerContainer}>
-                <View style={{ flex: 2.3 }}>
+                <View style={{ flex: 2 }}>
                     <Text style={styles.itemHeader}>{item.name}</Text>
                     <Text style={styles.itemDescription}>{item.description}</Text>
                     <Text style={styles.itemPrice}>${item.price}</Text>
@@ -70,6 +71,10 @@ const Home = ({ navigation }) => {
         setOnSelection(selectedCategory)
     }
 
+    const handleSearchQuery = (query) => {
+        setDeboucedText(query)
+    }
+
     useEffect(() => {
         createTable(fetchOrLoadMenu)
     }, [])
@@ -77,17 +82,17 @@ const Home = ({ navigation }) => {
 
     useUpdateEffect(() => {
         (async () => {
-            const filteredOutput = await filterByCategories(onSelection)
+            const filteredOutput = await filterByQueryAndCategories(onSelection, deboucedText)
             const categorizedMenu = filteredOutput.map(item => ({
                 ...item,
                 price: item.price / 100,
             }));
             setMenu(categorizedMenu);
         })()
-    }, [onSelection])
+    }, [onSelection, deboucedText])
 
     return (
-        <KeyboardAvoidingView style={styles.Container}>
+        <View style={styles.Container}>
             <View style={styles.header}>
                 <Image source={require('../src/images/Logo.png')} />
                 
@@ -112,9 +117,9 @@ const Home = ({ navigation }) => {
             </View>
             
             <View style={styles.bannerContainer}>
-                    <MainBanner 
-
-                    />
+                <MainBanner 
+                    onQueryChange={handleSearchQuery}
+                />
             </View>
 
             <View style={styles.categoriesContainer}>
@@ -142,7 +147,7 @@ const Home = ({ navigation }) => {
             </View>
 
             <StatusBar barStyle='dark-content' backgroundColor='#EDEFEE'/>
-        </KeyboardAvoidingView>
+        </View>
     )
 }
 
@@ -174,14 +179,14 @@ const styles = StyleSheet.create({
         borderRadius: 27,
     },
     bannerContainer: {
-        flex: 4.5,
+        flex: 5.1,
         backgroundColor: '#495E57',
         marginBottom: 35,
         marginTop: 5
     },
     categoriesContainer: {
         flex: 1.2,
-        paddingBottom: 15,
+        paddingBottom: 25,
         marginLeft: 15
     },
     orderText: {
@@ -191,8 +196,9 @@ const styles = StyleSheet.create({
         paddingBottom: 5,
     },
     menuContainer: {
-        flex: 5,
+        flex: 4,
         marginHorizontal: 15,
+        marginTop: 10
     },
     menuInnerContainer: {
         flexDirection: 'row',

@@ -11,7 +11,7 @@ export const validateName = (userData, setUserData) => {
 };
 
 export const validateMail = (userData, setUserData) => {
-    const validMail = /^[a-zA-Z]+@[a-zA-Z]+\.[a-zA-Z]{2,}$/;
+    const validMail = /^[a-zA-Z0-9]+@[a-zA-Z]+\.[a-zA-Z]{2,}$/;
     console.log(userData);
     if (validMail.test(userData.email)) {
       setUserData({ ...userData, email: userData.email });

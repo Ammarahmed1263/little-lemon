@@ -1,14 +1,25 @@
 import { View, TextInput, Text, Image, StyleSheet } from "react-native";
 import { useFonts } from "expo-font";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { debounce } from "lodash";
 
-const MainBanner = () => {
-    const [query, setQuery] = useState('')
-
+const MainBanner = ({ onQueryChange }) => {
+    const [searchQuery, setSearchQuery] = useState('')
     const [fontsLoaded] = useFonts({
         "Markazi Text": require("../fonts/MarkaziText.ttf"),
         "Karla": require("../fonts/Karla.ttf")
     });
+    
+    const handleDebouncedQuery = debounce(onQueryChange, 500)
+
+    useEffect(() => {
+        handleDebouncedQuery(searchQuery)
+
+        return () => {
+            handleDebouncedQuery.cancel();
+        }
+    }, [searchQuery])
+
 
     if (!fontsLoaded) {
         return <Text>Loading...</Text>;
@@ -16,13 +27,11 @@ const MainBanner = () => {
 
     return (
         <View style={styles.mainBanner}>
-            <View style={styles.upperBanner}>
+            <View>
                 <Text style={styles.textHeader}>Little Lemon</Text>
                 <Text style={styles.subHeader}>Chicago</Text>
                 <View style={styles.imageTextContainer}>
-                    <View style={{flex: 2, marginRight: 13}}>
-                        <Text style={styles.description}>We are a family owned Mediterranean restaurant, focused on traditional recipes served with a modern twist.</Text>
-                    </View>
+                    <Text style={styles.description}>We are a family owned Mediterranean restaurant, focused on traditional recipes served with a modern twist.</Text>
                     <Image
                         source={require('../images/bannerImage.jpg')}
                         style={styles.foodImage}
@@ -35,9 +44,9 @@ const MainBanner = () => {
                     source={require('../images/search.png')}
                     style={styles.barImage}
                 />
-                {/* remember to commit then functionality of search bar  */}
                 <TextInput
-                    caretHidden={true}
+                    value={searchQuery}
+                    onChangeText={setSearchQuery}
                     style={styles.searchBar}
                 />
             </View>
@@ -53,14 +62,11 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         paddingBottom: 10
     },
-    upperBanner: {
-        flex: 4,
-        paddingBottom: 20,
-    },
     imageTextContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'flex-end',
+        marginBottom: 10
     },
     textHeader:{
         fontSize: 55,
@@ -75,9 +81,11 @@ const styles = StyleSheet.create({
         top: 53
     },
     description:{
-        fontSize: 17,
+        flex: 2,
+        fontSize: 18,
+        marginBottom: 3,
         color: '#EDEFEE',
-        marginBottom: 15
+        marginRight: 30
     },
     foodImage:{
         flex: 1,
@@ -88,12 +96,13 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10
     },
     barContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      backgroundColor: '#fff',
-      borderRadius: 5,
-      padding: 10,
-      margin: 10,
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#fff',
+        borderRadius: 5,
+        padding: 10,
+        margin: 10,
+        marginVertical: 20,
     },
     barImage: {
         width: 20,
@@ -102,45 +111,7 @@ const styles = StyleSheet.create({
     },
     searchBar: {
         flex: 1,
-        fontSize: 20
+        fontSize: 20,
+        marginLeft: 10
     }
 })
-
-
-// const SearchBar = () => {
-//     const [searchQuery, setSearchQuery] = useState('');
-  
-//     return (
-//       <View style={styles.container}>
-//         <Image 
-//           source={require('./path-to-your-icon.png')} // replace with your icon path
-//           style={styles.icon}
-//         />
-//         <TextInput
-//           value={searchQuery}
-//           onChangeText={setSearchQuery}
-//           placeholder="Search"
-//           style={styles.input}
-//         />
-//       </View>
-//     );
-//   };
-  
-//   const styles = StyleSheet.create({
-//     container: {
-//       flexDirection: 'row',
-//       alignItems: 'center',
-//       backgroundColor: '#fff',
-//       borderRadius: 5,
-//       padding: 10,
-//       margin: 10,
-//     },
-//     icon: {
-//       height: 20,
-//       width: 20,
-//       marginRight: 10,
-//     },
-//     input: {
-//       flex: 1,
-//     },
-//   });

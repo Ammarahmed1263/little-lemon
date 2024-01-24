@@ -73,7 +73,7 @@ const Profile = ({ navigation }) => {
 
     const handleSave = async () => {
         try {
-            if (validateName(userData, setUserData) && validateMail(userData, setUserData) && validateNumber()) {
+            if (validateName(userData, setUserData) && validateMail(userData, setUserData)) {
                 await AsyncStorage.setItem("userInfo", JSON.stringify(userData));
                 alert('Changes saved successfully');
             }
