@@ -2,7 +2,7 @@ import axios from "axios"
 import { View, Text, StyleSheet, Image, StatusBar, ActivityIndicator, FlatList } from "react-native"
 import { useContext, useEffect, useState } from "react"
 import { OnboardingContext } from "../src/components/CreateContext"
-import { createTable, getMenuItems, storeMenu } from '../src/components/database';
+import { createTable, getMenuItems, storeMenu } from '../utils/database';
 import DefaultImage from "../src/components/DefaultImage"
 import Button from "../src/components/Button"
 import CategoriesList from "../src/components/CategoriesList";

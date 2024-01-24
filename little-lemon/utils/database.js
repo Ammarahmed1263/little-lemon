@@ -37,3 +37,7 @@ export const storeMenu = (menu) => {
         })
     })
 }
+
+export const filterByCategories = ({ categories }) => {
+    
+} 
