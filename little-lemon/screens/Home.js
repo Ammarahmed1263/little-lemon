@@ -1,5 +1,5 @@
 import axios from "axios"
-import { View, Text, StyleSheet, Image, StatusBar, ActivityIndicator, FlatList, TouchableWithoutFeedback, Keyboard} from "react-native"
+import { View, Text, StyleSheet, Image, StatusBar, ActivityIndicator, FlatList} from "react-native"
 import { useContext, useEffect, useState } from "react"
 import { OnboardingContext } from "../src/components/CreateContext"
 import { createTable, getMenuItems, storeMenu, filterByQueryAndCategories } from '../utils/database';
